@@ -1,0 +1,8 @@
+ 
+PostgreSQL
+
+host: database-1.cxvevbdvbopi.eu-central-1.rds.amazonaws.com
+port: 5432
+username: postgres
+password: !5e8VP!(e2i<
+default database name: postgres

@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Camera {
+  id              Int    @id @default(autoincrement())
+  url             String @unique
+  store_branch_id Int
+  camera_name     String @unique
+  CameraOperaation  CameraOperaation[]
+  processes     Process[]
+  StoreBranch   StoreBranch? @relation(fields: [storeBranchId], references: [id])
+  storeBranchId Int?
+}
+
+model Package {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  package_name String   @unique
+  price        Int
+  cam_size     Int
+  created_date DateTime
+
+  StoreBranch StoreBranch[]
+  NormalUser        NormalUser? @relation(fields: [normalUserId], references: [id])
+  normalUserId      Int?
+}
+
+model UserPayment {
+  id             Int      @id @default(autoincrement())
+  user_id        Int
+  amount         Int
+  payment_method String
+  status         String
+  created_date   DateTime
+
+  NormalNUser   NormalUser? @relation(fields: [normalUserId], references: [id])
+  normalUserId Int?
+}
+
+model PersonCount {
+  id          Int    @id @default(autoincrement())
+  personCount String
+  userID      Int
+  processID   Int
+  ageID       Int
+  genderID    Int
+
+  @@unique([personCount], name: "unique_person_count")
+}
+
+model StoreBranch {
+  id         Int    @id @default(autoincrement())
+  store_name String @unique
+  userID     Int
+  packageID  Int
+  latitude   Float
+  longitude  Float
+
+  cameras   Camera[]
+  Package   Package? @relation(fields: [packageId], references: [id])
+  packageId Int?
+  NormalUser      NormalUser?    @relation(fields: [normalUserId], references: [id])
+  normalUserId    Int?
+}
+model AdminUser{
+    id        Int           @id @default(autoincrement())
+    email String @unique
+    password String
+}
+model AdminUserLogin{
+    id        Int           @id @default(autoincrement())
+    username String
+    logintime DateTime
+    logouttime DateTime?
+    cookie String
+
+}
+model NormalUser {
+  id        Int           @id @default(autoincrement())
+  username  String        @unique
+  firstname String
+  lastname  String
+  email     String        @unique
+  password  String
+  payments  UserPayment[]
+  branches  StoreBranch[]
+  packages  Package[]
+}
+model NormalUserLogin{
+    id        Int           @id @default(autoincrement())
+    username String
+    logintime DateTime
+    logouttime DateTime?
+    cookie String
+
+}
+
+model Gender {
+  id        Int @id @default(autoincrement())
+  personID_ Int @unique
+}
+
+model Age {
+  id        Int @id @default(autoincrement())
+  personID_ Int @unique
+}
+
+model Process {
+  id             Int    @id @default(autoincrement())
+  cameraID       Int
+  process_name   String
+  operation_name String
+
+  Camera   Camera? @relation(fields: [cameraId], references: [id])
+  cameraId Int?
+}
+model CameraOperaation {
+  id              Int    @id @default(autoincrement())
+  Camera   Camera @relation(fields: [cameraID], references: [id])
+  cameraID Int
+  cameraOperaation Json
+  cameraOperationCondition Boolean
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+}
